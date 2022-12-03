@@ -1,0 +1,571 @@
+#!csharp
+
+// 1. define and init record - Naming conventions
+public record Person(string Name, int Age, string Gender) {};
+// public record Person
+// {
+//     public string Name { get; init; }
+//     public int Age { get; init; }
+//     public string Gender { get; init; }
+// };
+
+var p = new Person("Zhang san", 35, "Male");
+
+Console.WriteLine(p);
+
+#!csharp
+
+// 2. record - immutable and with mutation
+public record /* struct */ Person(string Name, int Age, string Gender, string Title) {};
+// public record Person(string Name, int age, string gender)
+// {
+//     public string Title { get; init; }
+// }
+
+var p = new Person("Zhang san", 35, "Male", "Specialist");
+// p.Title = "Another title";
+
+var p2 = p with { Title = "Another title" };
+var p3 = new Person("Zhang san", 35, "Male", "Another title");
+var p4 = p2;
+
+Console.WriteLine(p);
+Console.WriteLine(p2);
+
+// Value based equality
+Console.WriteLine(p == p2);
+Console.WriteLine(p3 == p2);
+Console.WriteLine(p4 == p2);
+Console.WriteLine(object.ReferenceEquals(p3, p2));
+Console.WriteLine(object.ReferenceEquals(p4, p2));
+
+#!csharp
+
+// 3. record - builtin display
+public record ApiResponse(bool Success, string Message, ApiStatus Status) {};
+public record ApiStatus(int StatusCode, object data) {};
+
+var status = new ApiStatus(200, """
+{
+    "count": 2,
+    "items": ["sample 1", "sample 2"]
+}
+""");
+
+var response = new ApiResponse(true, "business all good", status);
+
+Console.WriteLine(response);
+
+#!csharp
+
+// 4. record - IL - https://sharplab.io/#v2:CYLg1APgTgpgxgeysABAZwC5QK5wygQQAcBLAZQwEMNs0AKEgO3wutoGEFgYAaFBAEYArePmDVKASgDcAWABQQA=
+internal class ApiResponse : IEquatable<ApiResponse>
+{
+    private readonly bool Success_k__BackingField;
+    private readonly string Message_k__BackingField;
+    private readonly ApiStatus Status_k__BackingField;
+    protected virtual Type EqualityContract
+    {
+        get { return typeof(ApiResponse); }
+    }
+
+    public bool Success
+    {
+        get
+        {
+            return Success_k__BackingField;
+        }
+        init
+        {
+            Success_k__BackingField = value;
+        }
+    }
+
+    public string Message
+    {
+        get
+        {
+            return Message_k__BackingField;
+        }
+        init
+        {
+            Message_k__BackingField = value;
+        }
+    }
+
+    public ApiStatus Status
+    {
+        get
+        {
+            return Status_k__BackingField;
+        }
+        init
+        {
+            Status_k__BackingField = value;
+        }
+    }
+
+    public ApiResponse(bool Success, string Message, ApiStatus Status)
+    {
+        Success_k__BackingField = Success;
+        Message_k__BackingField = Message;
+        Status_k__BackingField = Status;
+    }
+
+    public override string ToString()
+    {
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.Append("ApiResponse");
+        stringBuilder.Append(" { ");
+        if (PrintMembers(stringBuilder))
+        {
+            stringBuilder.Append(' ');
+        }
+        stringBuilder.Append('}');
+        return stringBuilder.ToString();
+    }
+
+    protected virtual bool PrintMembers(StringBuilder builder)
+    {
+        builder.Append("Success = ");
+        builder.Append(Success.ToString());
+        builder.Append(", Message = ");
+        builder.Append((object)Message);
+        builder.Append(", Status = ");
+        builder.Append(Status);
+        return true;
+    }
+
+    public static bool operator !=(ApiResponse left, ApiResponse right)
+    {
+        return !(left == right);
+    }
+
+    public static bool operator ==(ApiResponse left, ApiResponse right)
+    {
+        return (object)left == right || ((object)left != null && left.Equals(right));
+    }
+
+    public override int GetHashCode()
+    {
+        return ((EqualityComparer<Type>.Default.GetHashCode(EqualityContract) * -1521134295 + EqualityComparer<bool>.Default.GetHashCode(Success_k__BackingField)) * -1521134295 + EqualityComparer<string>.Default.GetHashCode(Message_k__BackingField)) * -1521134295 + EqualityComparer<ApiStatus>.Default.GetHashCode(Status_k__BackingField);
+    }
+
+    public override bool Equals(object obj)
+    {
+        return Equals(obj as ApiResponse);
+    }
+
+    public virtual bool Equals(ApiResponse other)
+    {
+        return (object)this == other || ((object)other != null && EqualityContract == other.EqualityContract && EqualityComparer<bool>.Default.Equals(Success_k__BackingField, other.Success_k__BackingField) && EqualityComparer<string>.Default.Equals(Message_k__BackingField, other.Message_k__BackingField) && EqualityComparer<ApiStatus>.Default.Equals(Status_k__BackingField, other.Status_k__BackingField));
+    }
+
+    public virtual ApiResponse Clone()
+    {
+        return new ApiResponse(this);
+    }
+
+    protected ApiResponse(ApiResponse original)
+    {
+        Success_k__BackingField = original.Success_k__BackingField;
+        Message_k__BackingField = original.Message_k__BackingField;
+        Status_k__BackingField = original.Status_k__BackingField;
+    }
+
+    public void Deconstruct(out bool Success, out string Message, out ApiStatus Status)
+    {
+        Success = this.Success;
+        Message = this.Message;
+        Status = this.Status;
+    }
+}
+
+#!csharp
+
+// 1. Declaration Pattern
+#nullable enable
+var greeting = "Hello, World!";
+string? notNullGreeting = "Hello World from Nullable";
+string? nullGreeting = null;
+
+if (greeting is string message)
+    Console.WriteLine(message.ToLower());
+else
+    Console.WriteLine("not match!");
+
+// Console.WriteLine(message.ToLower());
+
+if (notNullGreeting is string message2)
+    Console.WriteLine(message2.ToLower());
+else
+    Console.WriteLine("not match!");
+
+if (nullGreeting is string message3)
+    Console.WriteLine(message3.ToLower());
+else
+    Console.WriteLine("not match!");
+
+#!csharp
+
+// 2. Type pattern
+public abstract class BaseException { public string Message { get; set; } }
+public class InnerSystemException : BaseException {}
+public class BusinessException : BaseException {}
+
+public static string CheckForExceptionMessage(this BaseException exception) => exception switch
+{
+    InnerSystemException => "This is an inner system exception",
+    BusinessException => "This is a business exception",
+    // _ => "This is an unknown exception",
+};
+
+var innerException = new InnerSystemException();
+var bizException = new BusinessException();
+
+Console.WriteLine(innerException.CheckForExceptionMessage());
+Console.WriteLine(bizException.CheckForExceptionMessage());
+
+#!csharp
+
+// 3. Constant Pattern
+enum BloodType
+{
+    A,
+    B,
+    AB,
+    O
+};
+
+string CheckForDifferentTypeOfCondition(object condition) => condition switch
+{
+    1 => "Matched condition int and value is 1",
+    "CHECKED" => "Matched condition string and value is `CHECKED`",
+    true => "Matched condition boolean and value is true",
+    // BloodType => "ohh",
+    BloodType.O => "Matched condition enum and value is BloodType.O",
+    null => "Matched condition NULL",
+    _ => $"Not supported condition {condition}"
+};
+
+// object condition = "CHECKED";
+// switch(condition)
+// {
+//     case 1:
+//         Console.WriteLine("Matched 1");
+//         break;
+//     case "CHECKED":
+//         Console.WriteLine("Matched 2");
+//         break;
+//     default:
+//         break;
+// }
+
+Console.WriteLine(CheckForDifferentTypeOfCondition(1));
+Console.WriteLine(CheckForDifferentTypeOfCondition("CHECKED"));
+Console.WriteLine(CheckForDifferentTypeOfCondition(true));
+Console.WriteLine(CheckForDifferentTypeOfCondition(BloodType.O));
+Console.WriteLine(CheckForDifferentTypeOfCondition(null));
+Console.WriteLine(CheckForDifferentTypeOfCondition(false));
+
+#!csharp
+
+// 4. Relational Pattern
+static string GetCalendarSeason(DateTime date) => date.Month switch
+{
+    >= 3 and < 6 => "spring",
+    >= 6 and < 9 => "summer",
+    >= 9 and < 12 => "autumn",
+    12 or (>= 1 and < 3) => "winter",
+    _ => throw new ArgumentOutOfRangeException(nameof(date), $"Date with unexpected month: {date.Month}."),
+};
+
+Console.WriteLine(GetCalendarSeason(new DateTime(2022, 2, 19)));
+Console.WriteLine(GetCalendarSeason(new DateTime(2022, 10, 9)));
+Console.WriteLine(GetCalendarSeason(new DateTime(2022, 5, 11)));
+Console.WriteLine(GetCalendarSeason(new DateTime(2022, 8, 14)));
+
+#!csharp
+
+// 5. Logical Pattern
+// `not`
+var l1 = new List<int>();
+List<int> l2 = null;
+Console.WriteLine($"{l1 is not null}");
+Console.WriteLine($"{l2 is not null}");
+
+// `and`
+public record DigitalHealthCode(List<string> Last7DayRoutings, string CodeColor) {};
+
+var dhCode = new DigitalHealthCode(new List<string> { "Xi'an", "Shang Hai", "Guang Zhou" }, "RED");
+DigitalHealthCode dhcode2 = null;
+if (dhCode is DigitalHealthCode and { CodeColor: "RED" } code)
+// if (dhcode2 is DigitalHealthCode and { CodeColor: "RED" } code)
+{
+    Console.WriteLine(string.Join(" --> ", code.Last7DayRoutings));
+}
+else
+{
+    Console.WriteLine("not match!");
+}
+
+// `or`
+static string GetCalendarSeason(DateTime date) => date.Month switch
+{
+    3 or 4 or 5 => "spring",
+    6 or 7 or 8 => "summer",
+    9 or 10 or 11 => "autumn",
+    12 or 1 or 2 => "winter",
+    _ => throw new ArgumentOutOfRangeException(nameof(date), $"Date with unexpected month: {date.Month}."),
+};
+
+Console.WriteLine(GetCalendarSeason(new DateTime(2022, 2, 19)));
+Console.WriteLine(GetCalendarSeason(new DateTime(2022, 10, 9)));
+Console.WriteLine(GetCalendarSeason(new DateTime(2022, 5, 11)));
+Console.WriteLine(GetCalendarSeason(new DateTime(2022, 8, 14)));
+
+#!csharp
+
+// 6. Property Pattern
+public record Point3d(int X, int Y, int Z) {};
+public record WeightPoint3d(Point3d Point, int Weight) {};
+
+var point = new Point3d(-2, 3, -8);
+var weightedPoint = new WeightPoint3d(point, 4);
+
+if (weightedPoint is WeightPoint3d { Point.X: < 0, Weight: > 0 } p)
+{
+    Console.WriteLine(p);
+}
+else
+{
+    Console.WriteLine("not match!");
+}
+
+#!csharp
+
+// 7. Positional Pattern
+public record struct Weighted3dPoint(int X, int Y, int Z, int Weight) {};
+var point = new Weighted3dPoint(-2, 3, -8, 4);
+
+if (point is Weighted3dPoint (< 0, > 0, _, > 0) p)
+{
+    Console.WriteLine(p);
+}
+else
+{
+    Console.WriteLine("not match!");
+}
+
+#!csharp
+
+// 8. var Pattern
+// For capturing temp variables
+static int[] SimulateDataFetch(int id)
+{
+    var rand = new Random();
+    return Enumerable
+        .Range(start: 0, count: 5)
+        .Select(s => rand.Next(minValue: -10, maxValue: 11))
+        .ToArray();
+}
+
+static bool IsAcceptable(int id, int absLimit) =>
+    SimulateDataFetch(id) is var results 
+    && results.Min() >= -absLimit 
+    && results.Max() <= absLimit;
+
+Console.WriteLine(IsAcceptable(10, 2));
+Console.WriteLine(IsAcceptable(1, 20));
+
+// For deconstruction
+public record Point(int X, int Y);
+
+Point Transform(Point point) => point switch
+{
+    var (x, y) when x < y => new Point(-x, y),
+    var (x, y) when x > y => new Point(x, -y),
+    var (x, y) => new Point(x, y),
+};
+
+Console.WriteLine(Transform(new Point(1, 2)));
+Console.WriteLine(Transform(new Point(5, 2)));
+
+#!csharp
+
+// 9. Discard Pattern - matching
+static decimal CrazyThursdayDiscount(DayOfWeek? dayOfWeek) => dayOfWeek switch
+{
+    DayOfWeek.Monday or DayOfWeek.Friday => 1.0m,
+    DayOfWeek.Tuesday => 1.2m,
+    DayOfWeek.Wednesday => 1.3m,
+    DayOfWeek.Thursday => 0.5m,
+    DayOfWeek.Saturday or DayOfWeek.Sunday  => 2.0m,
+    _ => 0.0m,
+};
+
+Console.WriteLine(CrazyThursdayDiscount(DayOfWeek.Friday));
+Console.WriteLine(CrazyThursdayDiscount(DayOfWeek.Thursday));
+Console.WriteLine(CrazyThursdayDiscount(null));
+Console.WriteLine(CrazyThursdayDiscount((DayOfWeek)10));
+
+#!csharp
+
+// 9. Discard Pattern - capture
+var lTuple = ("Jone Doe", 35, "Retired");
+if (lTuple is (var name, _, "Retired"))
+{
+    Console.WriteLine($"Retired person name is {name}");
+}
+else
+{
+    Console.WriteLine("not match!");
+}
+
+#!csharp
+
+// 10. Parenthesized pattern - can put parentheses around any pattern
+enum IpType
+{
+    Ipv4,
+    Ipv6
+};
+
+var ipType = IpType.Ipv4;
+
+if (ipType is (IpType.Ipv4 or IpType.Ipv6))
+{
+    Console.WriteLine($"ipType is a valid IP type, type is {ipType}");
+}
+else
+{
+    Console.WriteLine("not match!");
+}
+
+#!csharp
+
+// 11. List Pattern - switch expression
+var listPatternSample1 = new int[] { 1, 2, 3, 4, 5 };
+var listPatternSample2 = new int[] { 1, 3, 5 };
+var listPatternSample3 = new int[] { 1 };
+var listPatternSample4 = new int[] { 9 };
+var listPatternSample5 = new int[0];
+
+string TryListPatternMatch(int[] collection) => collection switch
+{
+    [1, 2, 3, 4, 5] => "This pattern matches int list with 5 elements, and each position exactly mactches",
+    [1, .., 5] => "This pattern matches int list with length >= 2, fist element is 1 and last element is 5",
+    [.., 9] => "This pattern matches int list with length >= 1, last element is 9",
+    [..] => "This pattern matches any int list"
+};
+
+Console.WriteLine(TryListPatternMatch(listPatternSample1));
+Console.WriteLine(TryListPatternMatch(listPatternSample2));
+Console.WriteLine(TryListPatternMatch(listPatternSample3));
+Console.WriteLine(TryListPatternMatch(listPatternSample4));
+Console.WriteLine(TryListPatternMatch(listPatternSample5));
+
+#!csharp
+
+// 11. List Pattern - capture value
+var l1 = new[] { 1, 2, 3, 4, 5 };
+if(l1 is [ 1, 2, .. var subs, 5 ])
+{
+    Console.WriteLine(string.Join(", ", subs));
+    Console.WriteLine(subs.GetType());
+}
+else
+{
+    Console.WriteLine("not match!");
+}
+
+#!csharp
+
+// extra - default interface implementation
+public interface ICovidTest
+{
+    void CovidTest() => Console.WriteLine("Default covid test is throat test");
+}
+
+public class ThroatCovidTest : ICovidTest
+{
+}
+
+public class NoseCovidTest : ICovidTest
+{
+    public void CovidTest() => Console.WriteLine("The covid test is nose test");
+}
+
+ICovidTest throatCt = new ThroatCovidTest();
+ICovidTest noseCT = new NoseCovidTest();
+
+throatCt.CovidTest();
+noseCT.CovidTest()
+
+#!csharp
+
+// extra - Ranges - The start of the range is inclusive, but the end of the range is exclusive
+// public readonly struct Index
+// {
+//     public Index(int value, bool fromEnd);
+// }
+
+// public readonly struct Range
+// {
+//     public Range(System.Index start, System.Index end);
+//     public static Range StartAt(System.Index start);
+//     public static Range EndAt(System.Index end);
+//     public static Range All { get; }
+// }
+var array = new int[] { 1, 2, 3, 4, 5 };
+
+var range1 = 2..^3;
+var range2 = ..^3;
+var range3 = 2..;
+var range4 = ..;
+
+var slice1 = array[range1];
+var slice2 = array[range2];
+var slice3 = array[range3];
+var slice4 = array[range4];
+
+Console.WriteLine(range1.Display());
+slice1.ToList().ForEach(Console.WriteLine);
+
+Console.WriteLine(range2.Display());
+slice2.ToList().ForEach(Console.WriteLine);
+
+Console.WriteLine(range3.Display());
+slice3.ToList().ForEach(Console.WriteLine);
+
+Console.WriteLine(range4.Display());
+slice4.ToList().ForEach(Console.WriteLine);
+
+slice4[2] = 10;
+Console.WriteLine("After change of sub sequence");
+array.ToList().ForEach(Console.WriteLine);
+
+#!csharp
+
+// extra - Null parameter checking
+void MyMethod(object input)
+{
+    ArgumentNullException.ThrowIfNull(input);
+
+    // TODO..
+}
+
+// -->
+
+void MyMethodWithNullChecking(object input!!)
+{
+    // TODO..
+}
+
+#!csharp
+
+// extra - file type
+file class MyFileClass
+{
+    // ....
+}
