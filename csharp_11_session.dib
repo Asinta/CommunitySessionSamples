@@ -242,24 +242,10 @@ string CheckForDifferentTypeOfCondition(object condition) => condition switch
     1 => "Matched condition int and value is 1",
     "CHECKED" => "Matched condition string and value is `CHECKED`",
     true => "Matched condition boolean and value is true",
-    // BloodType => "ohh",
     BloodType.O => "Matched condition enum and value is BloodType.O",
     null => "Matched condition NULL",
     _ => $"Not supported condition {condition}"
 };
-
-// object condition = "CHECKED";
-// switch(condition)
-// {
-//     case 1:
-//         Console.WriteLine("Matched 1");
-//         break;
-//     case "CHECKED":
-//         Console.WriteLine("Matched 2");
-//         break;
-//     default:
-//         break;
-// }
 
 Console.WriteLine(CheckForDifferentTypeOfCondition(1));
 Console.WriteLine(CheckForDifferentTypeOfCondition("CHECKED"));
@@ -544,23 +530,6 @@ slice4.ToList().ForEach(Console.WriteLine);
 slice4[2] = 10;
 Console.WriteLine("After change of sub sequence");
 array.ToList().ForEach(Console.WriteLine);
-
-#!csharp
-
-// extra - Null parameter checking
-void MyMethod(object input)
-{
-    ArgumentNullException.ThrowIfNull(input);
-
-    // TODO..
-}
-
-// -->
-
-void MyMethodWithNullChecking(object input!!)
-{
-    // TODO..
-}
 
 #!csharp
 
