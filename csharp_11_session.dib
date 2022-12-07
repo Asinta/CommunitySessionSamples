@@ -15,7 +15,7 @@ Console.WriteLine(p);
 
 #!csharp
 
-// 2. record - immutable and with mutation
+// 2. record - immutable and with mutation - thread safe / not a POCO
 public record /* struct */ Person(string Name, int Age, string Gender, string Title) {};
 // public record Person(string Name, int age, string gender)
 // {
@@ -183,7 +183,7 @@ internal class ApiResponse : IEquatable<ApiResponse>
 
 #!csharp
 
-// 1. Declaration Pattern
+// 1. Declaration Pattern - type and deconstruct
 #nullable enable
 var greeting = "Hello, World!";
 string? notNullGreeting = "Hello World from Nullable";
@@ -194,7 +194,7 @@ if (greeting is string message)
 else
     Console.WriteLine("not match!");
 
-// Console.WriteLine(message.ToLower());
+Console.WriteLine(message.ToLower());
 
 if (notNullGreeting is string message2)
     Console.WriteLine(message2.ToLower());
@@ -206,9 +206,11 @@ if (nullGreeting is string message3)
 else
     Console.WriteLine("not match!");
 
+Console.WriteLine(message3.ToLower());
+
 #!csharp
 
-// 2. Type pattern
+// 2. Type pattern - type
 public abstract class BaseException { public string Message { get; set; } }
 public class InnerSystemException : BaseException {}
 public class BusinessException : BaseException {}
@@ -228,7 +230,7 @@ Console.WriteLine(bizException.CheckForExceptionMessage());
 
 #!csharp
 
-// 3. Constant Pattern
+// 3. Constant Pattern - compare with constant
 enum BloodType
 {
     A,
@@ -256,7 +258,7 @@ Console.WriteLine(CheckForDifferentTypeOfCondition(false));
 
 #!csharp
 
-// 4. Relational Pattern
+// 4. Relational Pattern - with Logical pattern
 static string GetCalendarSeason(DateTime date) => date.Month switch
 {
     >= 3 and < 6 => "spring",
@@ -273,7 +275,7 @@ Console.WriteLine(GetCalendarSeason(new DateTime(2022, 8, 14)));
 
 #!csharp
 
-// 5. Logical Pattern
+// 5. Logical Pattern - is null vs == null? 
 // `not`
 var l1 = new List<int>();
 List<int> l2 = null;
@@ -395,8 +397,6 @@ Console.WriteLine(CrazyThursdayDiscount(DayOfWeek.Thursday));
 Console.WriteLine(CrazyThursdayDiscount(null));
 Console.WriteLine(CrazyThursdayDiscount((DayOfWeek)10));
 
-#!csharp
-
 // 9. Discard Pattern - capture
 var lTuple = ("Jone Doe", 35, "Retired");
 if (lTuple is (var name, _, "Retired"))
@@ -450,8 +450,6 @@ Console.WriteLine(TryListPatternMatch(listPatternSample2));
 Console.WriteLine(TryListPatternMatch(listPatternSample3));
 Console.WriteLine(TryListPatternMatch(listPatternSample4));
 Console.WriteLine(TryListPatternMatch(listPatternSample5));
-
-#!csharp
 
 // 11. List Pattern - capture value
 var l1 = new[] { 1, 2, 3, 4, 5 };
@@ -530,11 +528,3 @@ slice4.ToList().ForEach(Console.WriteLine);
 slice4[2] = 10;
 Console.WriteLine("After change of sub sequence");
 array.ToList().ForEach(Console.WriteLine);
-
-#!csharp
-
-// extra - file type
-file class MyFileClass
-{
-    // ....
-}

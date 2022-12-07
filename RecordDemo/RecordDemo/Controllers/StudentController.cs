@@ -20,7 +20,10 @@ public class StudentController : ControllerBase
     [HttpGet("{id:guid}", Name = "GetSingleStudent")]
     public async Task<ActionResult<StudentDto>> GetStudent(Guid id)
     {
-        return await _studentRepository.GetStudentDetailAsync(id);
+        var student = await _studentRepository.GetStudentDetailAsync(id);
+        Console.WriteLine($"{student.Gender}, {student.StudentName}");
+
+        return student;
     }
     
     [HttpPost]

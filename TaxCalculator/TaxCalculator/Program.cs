@@ -1,7 +1,17 @@
-﻿var incoming = (new Salary(20_000m, 1_500m, 2_000, 0m), new Remunerations(2_000m), new BusinessIncome(0m, false), new ExtraIncome(1_0000m));
+﻿var incoming = (
+    new Salary(20_000m, 1_500m, 2_000, 0m),
+    new Remunerations(2_000m),
+    new BusinessIncome(0m, false),
+    new ExtraIncome(1_0000m));
+
 var tax = TotalTaxCalculator.Calculate(incoming);
 
-// var incoming2 = (new Salary(20_000m, 1_500m, 2_000, 0m), new BusinessIncome(0m, false), new ExtraIncome(1_0000m), new Remunerations(2_000m));
+// var incoming2 = (
+//     new Salary(20_000m, 1_500m, 2_000, 0m),
+//     new BusinessIncome(0m, false),
+//     new ExtraIncome(1_0000m),
+//     new Remunerations(2_000m));
+//
 // var tax = TotalTaxCalculator.Calculate(incoming2);
 
 // not null check and deconstruction
